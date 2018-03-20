@@ -1,1 +1,359 @@
-88888
+
+<button type="button" id="Relation" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue;margin: -56px 370px 0;position: fixed;"> 关联</button>
+<button type="button" id="UnRelation" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid red;color: red;margin: -56px 430px 0;position: fixed;"> 解除</button>
+
+<button type="button" class="ExportQaTxt" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue;margin: -56px 490px 0;position: fixed;"> 导出qa</button>
+<button type="button" id="ExportUQaTxt" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue;margin: -56px 550px 0;position: fixed;"> 导出非qa</button>
+<button type="button" id="pushQa" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue;margin: -56px 610px 0;position: fixed;"> 推送问答</button>
+<button type="button" id="pushArticle" style="width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue;margin: -56px 670px 0;position: fixed;"> 推送文章</button>
+
+<div class="panel admin-panel" id="box">
+    <div class="panel-head"><strong class="icon-reorder"> <font color="red" size="4px">推送词条</font></strong></div>
+    <div class="padding border-bottom">
+
+        <input type="text" id="select_id" placeholder="id">
+        <input type="text" id="title" placeholder="词句">
+        <input type="text" id="name" placeholder="名词">
+
+        <select name="wd" id="wd" >
+        <option value="2">是否问答</option>
+        <option value="1">是</option>
+        <option value="0">否</option>
+        </select>
+        
+        <button id="button">搜索</button>
+
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th width="2%"></th>
+            <th width="6%">ID</th>
+            <th width="9%">关键词</th>
+            <th width="8%">词根</th>
+            <th width="8%">百度指数</th>
+            <th width="8%">长尾词数量</th>
+            <th width="8%">搜索结果</th>
+            <th width="8%">百度PC检索量</th>
+            <th width="8%">百度移动检索量</th>
+            <th width="8%">关联id</th>
+            <th width="5%">设置问答</th>
+            <th width="8%">是否推送</th>
+            <th width="8%">操作</th>
+        </tr>
+
+        <tbody id="tbody">
+
+        </tbody>
+
+    </table>
+
+</div>
+<div style="height: 50px;margin-top: 30px" >
+
+
+
+
+    <br>
+
+    <button type="button" class="check" style="margin-left: 30px;width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"> 全选</button>
+    <button type="button" class="checkOut" style="margin-left: 10px;width: 50px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"> 取消</button>
+
+    <button type="button" id="show" style="margin-left: 50px;width: 70px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"> 首页</button>
+
+    <button type="button" id="up" opn="" style="margin-left: 10px;width: 70px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"> 上页</button>
+
+    <button type="button" id="next" opn="" style="margin-left: 10px;width: 70px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"> 下页</button>
+
+    <button type="button" id="total_page" opn="" style="margin-left: 10px;width: 70px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue">尾页</button>
+
+
+    <input type="text" id="go_page" style="margin-left: 10px;width: 70px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue" placeholder="页码"><span style="margin-left: 3px" id="go">Go!</span>
+
+    <button type="button" disabled="disabled" style="margin-left: 10px;width: 100px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"><span id="now_p"></span>/
+        <span id="total_p"></span></button>
+
+    <button type="button" disabled="disabled" style="margin-left: 10px;width: 100px;height: 40px;border-radius: 5px;border: 1px solid steelblue;color: steelblue"><span id="total_num"></span>
+        <span id="total_p"></span>条</button>
+
+</div>
+
+<script src="/js/jquery-1.8.3.js"></script>
+<script>
+
+    $(function () {
+        var obj=Object();
+
+        //首页
+        $(document).on('click','#show',function () {
+            ajax_show(1)
+        });
+        //上页
+        $(document).on('click','#up',function () {
+            var p=$(this).attr('opn');
+            ajax_show(p)
+        });
+        //下页
+        $(document).on('click','#next',function () {
+            var p=$(this).attr('opn');
+            ajax_show(p)
+        });
+        //尾页
+        $(document).on('click','#total_page',function () {
+            var p=$(this).attr('opn');
+            ajax_show(p)
+        });
+        //搜索
+        $(document).on('click','#button',function () {
+            obj['select_id']=$('#select_id').val();
+            obj['title']=$('#title').val();
+            obj['name']=$('#name').val();
+            obj['wd']=$('#wd').val();
+
+            ajax_show(1)
+        });
+        //名词
+        $(document).on('click','.click_noun',function () {
+            obj['name']=$(this).attr('opn');
+            ajax_show(1)
+        });
+
+        //跳转
+        $(document).on('click','#go',function () {
+            obj['title']=$('#title').val();
+            obj['name']=$('#name').val();
+            obj['zt_id']=$('#zt_id').val();
+            var go_page=$('#go_page').val();
+            ajax_show(go_page)
+        });
+        //单删
+        $(document).on('click','.one_del',function () {
+            var del_id=$(this).attr('opn');
+            var p=$('#now_p').html();
+            ajax_show(p,del_id);
+        });
+        //单推
+        $(document).on('click','.one_push',function () {
+            var one_push=$(this).attr('opn');
+            var p=$('#now_p').html();
+            ajax_show(p,'','','',one_push);
+        });
+
+//        $(document).on('change','#type',function () {
+//            obj['tid']=$(this).val();
+//            obj['id']=11;
+//            ajax_show(1);
+//        });
+
+        ajax_show(1);
+        function ajax_show(p,del_id='',join_id='',unjoin_id='',push_id='') {
+            var select_id=obj['select_id'];
+            var tid=obj['tid'];
+            var title=obj['title'];
+            var name=obj['name'];
+            var wd=obj['wd'];       //is_qa 1是问答 0不是问答
+
+
+            //lert("select_id"+select_id);
+            //alert("wd"+wd);
+
+            $.ajax({
+                type: "POST",
+                url: "/citiaodistri/pushshow",
+                data: {p:p,name:name,wd:wd,title:title,select_id:select_id,del_id:del_id,join_id:join_id,unjoin_id:unjoin_id,push_id:push_id},
+                dataType:'json',
+                success: function(msg){
+                    if(msg.code){
+                        alert('删除失败');
+                    }
+                    var str='';
+                    $.each(msg.data,function (k,v) {
+                        str+='<tr class="tr" bgRed=0>';
+                        str+='<td><input type="checkbox" class="checkbox" value="'+v.id+'"></td>';
+                        str+='<td>'+v.id+'</td>';
+                        str+='<td>'+v.key_word+'</td>';
+                        str+='<td><span opn="'+v.noun+'" class="click_noun">'+v.noun+'</span></td>';
+                        str+='<td><font color="red">'+v.baidu_index+'</font></td>';
+                        str+='<td>'+v.long_keyword_count+'</td>';
+                        str+='<td>'+v.collect_count+'</td>';
+                        str+='<td>'+v.bidword_pcpv+'</td>';
+                        str+='<td>'+v.bidword_wisepv+'</td>';
+                        str+='<td><font color="red">'+v.join_id+'</font></td>';
+                        if(v.is_qa==1){
+                            str+='<td><div class="button-group">' +
+                                '<a class="button border-main" href="/citiaodistri/ajax_upd?qa='+v.id+'&q_a=0&type=1">' +
+                                '<span class="icon-edit is_qa" opn="'+v.id+'" opt="is_qa">是</span>' +
+                                '</a>' +
+                                '</div></td>';
+                        }else {
+                            str+='<td><div class="button-group">' +
+                                '<a class="button border-red" href="/citiaodistri/ajax_upd?qa='+v.id+'&q_a=1&type=1"  opn="">' +
+                                '<span class="is_qa" opn="'+v.id+'" opt="is_qa">否</span>' +
+                                '</a>' +
+                                '</div></td>';
+
+                        }
+                        str+='<td><font color="green">✔️</font></td>';
+                        str+='<td><div class="button-group"><a class="button border-red one_del" href="javascript:void (0)" opn="'+v.id+'"><span class="icon-trash-o"></span> 删除</a></div></td>';
+                        str+='</tr>';
+                    });
+                    $('#tbody').html(str);
+                    $('#next').attr('opn',msg.next);
+                    $('#up').attr('opn',msg.up);
+                    $('#now_p').html(msg.p);
+                    $('#total_page').attr('opn',msg.total_page);
+                    $('#total_p').html(msg.total_page);
+                    $('#total_num').html(msg.total_num);
+                }
+            });
+        }
+
+
+
+
+
+        //修改
+        $(document).on('click','.is_qa',function () {
+            var _this=$(this);
+            var val=$(this).html();
+            if(val=='是'){
+                val='否';
+            }else if(val=='否'){
+                val='是';
+            }
+
+            var id=$(this).attr('opn');  //id
+            var content=$(this).attr('opt');//字段
+
+            $.ajax({
+                type: "POST",
+                url: "/citiaodistri/ajax_upd",
+                data: {content:content,id:id,val:val},
+                success: function(msg){
+                    location.reload([true]);
+                }
+            });
+        });
+
+
+        //全选
+        $(document).on('click','.check',function () {
+            var check=$('.checkbox');
+            for (var i=0; i<check.length; i++){
+                check[i].checked = true;
+            }
+        });
+        //取消
+        $(document).on('click','.checkOut',function () {
+            var check=$('.checkbox');
+            for (var i=0; i<check.length; i++){
+                check[i].checked = false;
+            }
+        });
+
+        //关联
+        $(document).on('click','#Relation',function () {
+            var join_id=GetId();
+            if(join_id==''){
+                return false
+            }
+            var p=$('#now_p').html();
+            ajax_show(p,'',join_id);
+        });
+        //取消关联
+        $(document).on('click','#UnRelation',function () {
+            var unjoin_id=GetId();
+            if(unjoin_id==''){
+                return false
+            }
+            var p=$('#now_p').html();
+            ajax_show(p,'','',unjoin_id);
+        });
+
+
+        //批删除
+        $(document).on('click','#checkDel',function () {
+            var del_id=GetId();
+            if(del_id==''){
+                return false
+            }
+            var p=$('#now_p').html();
+            ajax_show(p,del_id);
+        });
+
+        //批推送
+        $(document).on('click','#All_Push',function () {
+            var push_id=GetId();
+            if(push_id==''){
+                return false
+            }
+            var p=$('#now_p').html();
+            ajax_show(p,'','','',push_id);
+        });
+
+        //导出问答txt
+        $(document).on('click','#ExportQaTxt',function () {
+
+            var id=GetId();
+            if(id==''){
+                return false
+            }
+            window.open('/citiaodistri/exporttxt?qa=1&id='+id);
+        });
+        //导出txt
+        $(document).on('click','#ExportUQaTxt',function () {
+
+            var id=GetId();
+            if(id==''){
+                return false
+            }
+            window.open('/citiaodistri/exporttxt?qa=2&id='+id);
+        });
+        //推送问答
+        $(document).on('click','#pushQa',function () {
+            var id=GetId();
+            if(id==''){
+                return false
+            }
+            window.open('/citiaodistri/exporttxt?qa=1&id='+id+'&push=1');
+        });
+        //推送文章
+        $(document).on('click','#pushArticle',function () {
+            var id=GetId();
+            if(id==''){
+                return false
+            }
+            location.href='/citiaodistri/exporttxt?qa=2&id='+id+'&push=2';
+            //window.open('/citiaodistri/exporttxt?qa=2&id='+id+'&push=2');
+        });
+
+
+        function GetId() {
+            var check=$('.checkbox');
+            var id='';
+            for (var i=0; i<check.length; i++){
+                if(check[i].checked){
+                    id+=','+check[i].value;
+                }
+            }
+            id=id.substr(1);
+            if(id==''){
+                return '';
+            }
+            return id;
+        }
+
+        $(document).on('click','.tr',function () {
+            if ($(this).attr("bgRed")==0){
+                $(this).attr("bgRed",1);
+                $(this).children().children().attr("checked", true);
+            } else {
+                $(this).attr("bgRed",0);
+                $(this).children().children().attr("checked", false);
+            }
+        });
+
+    });
+
+
+
+</script>
